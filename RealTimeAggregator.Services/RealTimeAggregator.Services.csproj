@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RealTimeAggregator.Data.ProductsConfig\RealTimeAggregator.Data.ProductsConfig.csproj" />
+    <ProjectReference Include="..\RealTimeAggregator.Data.Purchase\RealTimeAggregator.Data.Purchase.csproj" />
+    <ProjectReference Include="..\RealTimeAggregator.Data.Sales\RealTimeAggregator.Data.Sales.csproj" />
+  </ItemGroup>
+
+</Project>

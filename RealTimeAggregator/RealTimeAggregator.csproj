@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,7 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MudBlazor" Version="6.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RealTimeAggregator.Data.ProductsConfig\RealTimeAggregator.Data.ProductsConfig.csproj" />
+    <ProjectReference Include="..\RealTimeAggregator.Data.Purchase\RealTimeAggregator.Data.Purchase.csproj" />
+    <ProjectReference Include="..\RealTimeAggregator.Data.Sales\RealTimeAggregator.Data.Sales.csproj" />
+    <ProjectReference Include="..\RealTimeAggregator.Services\RealTimeAggregator.Services.csproj" />
   </ItemGroup>
 
 </Project>
