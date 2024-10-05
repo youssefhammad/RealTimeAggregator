@@ -7,7 +7,10 @@
 @inject IUnitOfMeasureService UnitOfMeasureService
 @inject ISnackbar Snackbar
 
-<MudContainer MaxWidth="MaxWidth.False" Class="pa-4" Style="height: 100vh;">
+<div class="pa-4">
+    <div class="grid-container" style="height: 100%;">
+
+        <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
     <MudGrid Spacing="2" Style="height: 100%;">
         <!-- First Row: Dashboards -->
         <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
@@ -37,72 +40,122 @@
                 <MudText Typo="Typo.body2" Class="mt-2">Best Seller: <MudText Typo="Typo.h6" Color="Color.Success" Inline="true">Product A</MudText></MudText>
             </MudPaper>
         </MudItem>
+        </MudGrid>
+        </MudContainer>
 
-        <!-- Second Row: Forms -->
-        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
-            <MudPaper Elevation="3" Class="form-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">Dummy Form 1</MudText>
-                <MudForm Class="d-flex flex-column">
-                    <MudTextField T="string" Label="Field 1" />
-                    <MudTextField T="string" Label="Field 2" />
-                    <MudSelect T="string" Label="Select Option">
-                        <MudSelectItem Value="@("Option 1")">Option 1</MudSelectItem>
-                        <MudSelectItem Value="@("Option 2")">Option 2</MudSelectItem>
-                    </MudSelect>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" Class="mt-4">Submit</MudButton>
-                </MudForm>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
-            <MudPaper Elevation="3" Class="form-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">Dummy Form 2</MudText>
-                <MudForm Class="d-flex flex-column">
-                    <MudDatePicker Label="Date" />
-                    <MudTimePicker Label="Time" />
-                    <MudNumericField T="int" Label="Number" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" Class="mt-4">Submit</MudButton>
-                </MudForm>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
-            <MudPaper Elevation="3" Class="form-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">Add New Product</MudText>
-                <MudForm @bind-IsValid="@_formIsValid" @ref="_form" Class="d-flex flex-column">
-                    <MudTextField @bind-Value="_newProduct.ProductName" Label="Product Name" Required="true" RequiredError="Product name is required!" />
-                    <MudTextField @bind-Value="_newProduct.Description" Label="Description" />
+       <!-- Second Row: Forms -->
+        <!-- First Form -->
+        <div class="grid-item d-flex" style="height: 50%;">
+            <div class="form-box flex-grow-1">
+                <h6 class="mb-2">Dummy Form 1</h6>
+                <form class="d-flex flex-column">
+                    <label for="field1">Field 1</label>
+                    <input type="text" id="field1" name="field1" class="mb-2" />
 
-                    <!-- Modified MudSelect for categories -->
-                    <MudSelect T="int" @bind-Value="_newProduct.CategoryId" Label="Category" Required="true" RequiredError="Category is required!">
-                        @foreach (var category in _categories)
-                        {
-                            <MudSelectItem Value="@category.Id">@category.CategoryName</MudSelectItem>
-                        }
-                    </MudSelect>
+                    <label for="field2">Field 2</label>
+                    <input type="text" id="field2" name="field2" class="mb-2" />
 
-                    <!-- Standard HTML select for comparison -->
-                    <select @bind="@_newProduct.CategoryId">
-                        @foreach (var category in _categories)
-                        {
-                            <option value="@category.Id">@category.CategoryName</option>
-                        }
+                    <label for="selectOption">Select Option</label>
+                    <select id="selectOption" name="selectOption" class="mb-2">
+                        <option value="Option 1">Option 1</option>
+                        <option value="Option 2">Option 2</option>
                     </select>
 
-                    <MudSelect T="int" @bind-Value="_newProduct.UnitOfMeasureId" Label="Unit of Measure" Required="true" RequiredError="Unit of measure is required!">
-                        @foreach (var uom in _unitsOfMeasure)
-                        {
-                            <MudSelectItem Value="@uom.Id">@uom.UnitName (@uom.Symbol)</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudNumericField @bind-Value="_newProduct.Quantity" Label="Quantity" Required="true" RequiredError="Quantity is required!" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="AddNewProduct" Class="mt-4">Add Product</MudButton>
-                </MudForm>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+                    <button type="submit" class="mt-4 submit-button">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Second Form -->
+        <div class="grid-item d-flex" style="height: 50%;">
+            <div class="form-box flex-grow-1">
+                <h6 class="mb-2">Dummy Form 2</h6>
+                <form class="d-flex flex-column">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" class="mb-2" />
+
+                    <label for="time">Time</label>
+                    <input type="time" id="time" name="time" class="mb-2" />
+
+                    <label for="number">Number</label>
+                    <input type="number" id="number" name="number" class="mb-2" />
+
+                    <button type="submit" class="mt-4 submit-button secondary">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Third Form: Add New Product -->
+        <div class="grid-item d-flex" style="height: 50%;">
+            <div class="form-box flex-grow-1">
+                <h6 class="mb-2">Add New Product</h6>
+                <EditForm Model="_newProduct" OnValidSubmit="AddNewProduct" class="d-flex flex-column">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-2">
+                        <label for="productName">Product Name</label>
+                        <InputText id="productName" @bind-Value="_newProduct.ProductName" class="mb-2" />
+                        <ValidationMessage For="@(() => _newProduct.ProductName)" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="description">Description</label>
+                        <InputText id="description" @bind-Value="_newProduct.Description" class="mb-2" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="categoryId">Category</label>
+                        <select id="categoryId" @bind="_newProduct.CategoryId" class="mb-2">
+                            @foreach (var category in _categories)
+                            {
+                                <option value="@category.Id">@category.CategoryName</option>
+                            }
+                        </select>
+                        <ValidationMessage For="@(() => _newProduct.CategoryId)" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="unitOfMeasureId">Unit of Measure</label>
+                        <select id="unitOfMeasureId" @bind="_newProduct.UnitOfMeasureId" class="mb-2">
+                            @foreach (var uom in _unitsOfMeasure)
+                            {
+                                <option value="@uom.Id">@uom.UnitName (@uom.Symbol)</option>
+                            }
+                        </select>
+                        <ValidationMessage For="@(() => _newProduct.UnitOfMeasureId)" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="quantity">Quantity</label>
+                        <InputNumber id="quantity" @bind-Value="_newProduct.Quantity" class="mb-2" />
+                        <ValidationMessage For="@(() => _newProduct.Quantity)" />
+                    </div>
+
+                    <button type="submit" class="mt-4 submit-button">Add Product</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
-    .dashboard-box, .form-box {
+    .pa-4 {
+        padding: 16px;
+    }
+
+    .grid-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .grid-item {
+        flex: 1 1 calc(33.333% - 16px);
+        box-sizing: border-box;
+    }
+
+    .form-box {
         display: flex;
         flex-direction: column;
         padding: 16px;
@@ -114,66 +167,84 @@
         background-color: #ffffff;
     }
 
-        .dashboard-box:hover, .form-box:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
+    .form-box:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
 
-    .chart-container {
-        flex-grow: 1;
+    .d-flex {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 180px;
     }
 
-    .mud-input {
+    .flex-column {
+        flex-direction: column;
+    }
+
+    .flex-grow-1 {
+        flex-grow: 1;
+    }
+
+    .mb-2 {
         margin-bottom: 8px;
     }
 
-    .mud-input-outlined {
-        border-radius: 4px;
+    .mt-4 {
+        margin-top: 16px;
     }
 
-    .mud-select {
-        margin-bottom: 8px;
-    }
-
-    .mud-button {
+    .submit-button {
         border-radius: 4px;
         text-transform: none;
         font-weight: 500;
-        padding: 4px 16px;
+        padding: 8px 16px;
         font-size: 0.875rem;
+        color: #fff;
+        background-color: #1976D2;
+        border: none;
+        cursor: pointer;
     }
 
-    .mud-typography-h6 {
+    .submit-button.secondary {
+        background-color: #9C27B0;
+    }
+
+    h6 {
         font-size: 1rem;
         font-weight: 600;
         color: #333;
     }
 
-    .mud-typography-body2 {
+    label {
         font-size: 0.875rem;
         color: #555;
+        margin-bottom: 4px;
     }
 
-    .mud-input-label {
+    input, select {
         font-size: 0.875rem;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
     }
 
-    .mud-input-root {
-        font-size: 0.875rem;
+    input:focus, select:focus {
+        border-color: #1976D2;
+        outline: none;
     }
+
+    .validation-message {
+        color: red;
+        font-size: 0.75rem;
+    }
+
 </style>
 
 @code {
     private List<Category> _categories = new List<Category>();
     private List<UnitOfMeasure> _unitsOfMeasure = new List<UnitOfMeasure>();
     private Product _newProduct = new Product { CategoryId = 0 }; // Initialize with a default value
-    private bool _formIsValid;
-    private MudForm _form;
 
-    // Chart Data
+    // Chart Data (assuming you want to keep using MudBlazor charts)
     public List<ChartSeries> Series = new List<ChartSeries>()
     {
         new ChartSeries() { Name = "Sales", Data = new double[] { 90, 79, 72, 69, 66, 55, 40 } },
@@ -215,12 +286,6 @@
             _categories = (await categoriesTask).ToList();
             _unitsOfMeasure = (await uomTask).ToList();
 
-            Console.WriteLine($"Categories count: {_categories.Count}");
-            foreach (var category in _categories)
-            {
-                Console.WriteLine($"Category Id: {category.Id}, Name: {category.CategoryName}, Description: {category.Description}");
-            }
-
             if (!_categories.Any())
             {
                 Console.WriteLine("No categories found.");
@@ -238,14 +303,13 @@
 
     private async Task AddNewProduct()
     {
-        if (_formIsValid)
+        if (_newProduct != null)
         {
             try
             {
                 await ProductService.CreateProductAsync(_newProduct);
                 Snackbar.Add("Product added successfully", Severity.Success);
                 _newProduct = new Product();
-                _form.Reset();
             }
             catch (Exception ex)
             {
