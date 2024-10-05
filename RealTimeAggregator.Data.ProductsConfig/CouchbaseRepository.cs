@@ -1,5 +1,6 @@
 ﻿using Couchbase.Query;
 using RealTimeAggregator.Core;
+using RealTimeAggregator.Data.ProductsConfig.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,35 @@ namespace RealTimeAggregator.Data.ProductsConfig
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            var cluster = await _dbService.GetClusterAsync();
-            var query = $"SELECT * FROM `{_bucketName}`.`_default`.`{_collectionName}`";
-            var result = await cluster.QueryAsync<T>(query);
-            return await result.Rows.ToListAsync();
+            try
+            {
+                var cluster = await _dbService.GetClusterAsync();
+                string query;
+
+                if (typeof(T) == typeof(Category))
+                {
+                    query = $"SELECT id, categoryName, description FROM `{_bucketName}`.`_default`.`{_collectionName}` WHERE type = 'category'";
+                }
+                else
+                {
+                    query = $"SELECT * FROM `{_bucketName}`.`_default`.`{_collectionName}` WHERE type = '{typeof(T).Name.ToLower()}'";
+                }
+
+
+                var result = await cluster.QueryAsync<T>(query);
+                var resultList = await result.Rows.ToListAsync();
+
+                foreach (var item in resultList)
+                {
+                    Console.WriteLine($"Retrieved item: {Newtonsoft.Json.JsonConvert.SerializeObject(item)}");
+                }
+
+                return resultList;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<T> GetByIdAsync(int id)

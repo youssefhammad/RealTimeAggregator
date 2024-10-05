@@ -1,10 +1,16 @@
 ﻿@page "/dashboard"
 @using MudBlazor
+@using RealTimeAggregator.Data.ProductsConfig.Models
+@using RealTimeAggregator.Services.ProductsConfig.Interfaces
+@inject IProductService ProductService
+@inject ICategoryService CategoryService
+@inject IUnitOfMeasureService UnitOfMeasureService
+@inject ISnackbar Snackbar
 
 <MudContainer MaxWidth="MaxWidth.False" Class="pa-4" Style="height: 100vh;">
     <MudGrid Spacing="2" Style="height: 100%;">
         <!-- First Row: Dashboards -->
-        <MudItem xs="12" sm="6" md="4" Class="d-flex" Style="height: 50%;">
+        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
             <MudPaper Elevation="3" Class="dashboard-box flex-grow-1">
                 <MudText Typo="Typo.h6" Class="mb-2">Sales Overview</MudText>
                 <div class="chart-container">
@@ -13,83 +19,82 @@
                 <MudText Typo="Typo.body2" Class="mt-2">Total Sales: <MudText Typo="Typo.h6" Color="Color.Primary" Inline="true">$54,350</MudText></MudText>
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" sm="6" md="4" Class="d-flex" Style="height: 50%;">
+        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
             <MudPaper Elevation="3" Class="dashboard-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">Customer Satisfaction</MudText>
+                <MudText Typo="Typo.h6" Class="mb-2">Product Distribution</MudText>
                 <div class="chart-container">
                     <MudChart ChartType="ChartType.Pie" InputData="@PieChartData" InputLabels="@PieChartLabels" Width="100%" Height="200px" />
                 </div>
-                <MudText Typo="Typo.body2" Class="mt-2">Average Rating: <MudText Typo="Typo.h6" Color="Color.Secondary" Inline="true">4.2/5</MudText></MudText>
+                <MudText Typo="Typo.body2" Class="mt-2">Total Products: <MudText Typo="Typo.h6" Color="Color.Secondary" Inline="true">150</MudText></MudText>
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" sm="12" md="4" Class="d-flex" Style="height: 50%;">
+        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
             <MudPaper Elevation="3" Class="dashboard-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">Top Products</MudText>
-                <div class="table-container">
-                    <MudSimpleTable Hover="true" Dense="true" FixedHeader="true">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Sales</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var product in TopProducts)
-                            {
-                                <tr>
-                                    <td>@product.Name</td>
-                                    <td>$@product.Sales.ToString("N0")</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </MudSimpleTable>
+                <MudText Typo="Typo.h6" Class="mb-2">Top Performing Products</MudText>
+                <div class="chart-container">
+                    <MudChart ChartType="ChartType.Line" ChartSeries="@LineSeries" XAxisLabels="@LineXAxisLabels" Width="100%" Height="200px" />
                 </div>
+                <MudText Typo="Typo.body2" Class="mt-2">Best Seller: <MudText Typo="Typo.h6" Color="Color.Success" Inline="true">Product A</MudText></MudText>
             </MudPaper>
         </MudItem>
 
         <!-- Second Row: Forms -->
-        <MudItem xs="12" sm="6" md="4" Class="d-flex" Style="height: 40%;">
+        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
             <MudPaper Elevation="3" Class="form-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">New Order</MudText>
-                <MudForm @bind-IsValid="_form1IsValid" @ref="_form1" Class="d-flex flex-column">
-                    <MudTextField @bind-Value="_form1Field1" Label="Customer Name" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudTextField @bind-Value="_form1Field2" Label="Product" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudNumericField @bind-Value="_form1Field3" Label="Quantity" Required="true" Min="1" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="!_form1IsValid" OnClick="OnForm1Submit" Class="mt-2">
-                        Submit Order
-                    </MudButton>
-                </MudForm>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4" Class="d-flex" Style="height: 40%;">
-            <MudPaper Elevation="3" Class="form-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">Customer Feedback</MudText>
-                <MudForm @bind-IsValid="_form2IsValid" @ref="_form2" Class="d-flex flex-column">
-                    <MudTextField @bind-Value="_form2Field1" Label="Customer Email" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudText Typo="Typo.body2" Class="mt-1 mb-0">Rating:</MudText>
-                    <MudRating @bind-Value="_form2Rating" SelectedColor="Color.Success" Size="Size.Small" />
-                    <MudTextField @bind-Value="_form2Field2" Label="Comments" Lines="2" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="!_form2IsValid" OnClick="OnForm2Submit" Class="mt-2">
-                        Submit Feedback
-                    </MudButton>
-                </MudForm>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4" Class="d-flex" Style="height: 40%;">
-            <MudPaper Elevation="3" Class="form-box flex-grow-1">
-                <MudText Typo="Typo.h6" Class="mb-2">Product Inquiry</MudText>
-                <MudForm @bind-IsValid="_form3IsValid" @ref="_form3" Class="d-flex flex-column">
-                    <MudTextField @bind-Value="_form3Field1" Label="Name" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudTextField @bind-Value="_form3Field2" Label="Email" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudSelect T="string" @bind-Value="_form3Field3" Label="Product Category" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
-                        <MudSelectItem Value="@("Electronics")">Electronics</MudSelectItem>
-                        <MudSelectItem Value="@("Clothing")">Clothing</MudSelectItem>
-                        <MudSelectItem Value="@("Home & Garden")">Home & Garden</MudSelectItem>
+                <MudText Typo="Typo.h6" Class="mb-2">Dummy Form 1</MudText>
+                <MudForm Class="d-flex flex-column">
+                    <MudTextField T="string" Label="Field 1" />
+                    <MudTextField T="string" Label="Field 2" />
+                    <MudSelect T="string" Label="Select Option">
+                        <MudSelectItem Value="@("Option 1")">Option 1</MudSelectItem>
+                        <MudSelectItem Value="@("Option 2")">Option 2</MudSelectItem>
                     </MudSelect>
-                    <MudTextField @bind-Value="_form3Field4" Label="Question" Lines="2" Variant="Variant.Outlined" Margin="Margin.Dense" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Tertiary" Disabled="!_form3IsValid" OnClick="OnForm3Submit" Class="mt-2">
-                        Submit Inquiry
-                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" Class="mt-4">Submit</MudButton>
+                </MudForm>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
+            <MudPaper Elevation="3" Class="form-box flex-grow-1">
+                <MudText Typo="Typo.h6" Class="mb-2">Dummy Form 2</MudText>
+                <MudForm Class="d-flex flex-column">
+                    <MudDatePicker Label="Date" />
+                    <MudTimePicker Label="Time" />
+                    <MudNumericField T="int" Label="Number" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" Class="mt-4">Submit</MudButton>
+                </MudForm>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
+            <MudPaper Elevation="3" Class="form-box flex-grow-1">
+                <MudText Typo="Typo.h6" Class="mb-2">Add New Product</MudText>
+                <MudForm @bind-IsValid="@_formIsValid" @ref="_form" Class="d-flex flex-column">
+                    <MudTextField @bind-Value="_newProduct.ProductName" Label="Product Name" Required="true" RequiredError="Product name is required!" />
+                    <MudTextField @bind-Value="_newProduct.Description" Label="Description" />
+
+                    <!-- Modified MudSelect for categories -->
+                    <MudSelect T="int" @bind-Value="_newProduct.CategoryId" Label="Category" Required="true" RequiredError="Category is required!">
+                        @foreach (var category in _categories)
+                        {
+                            <MudSelectItem Value="@category.Id">@category.CategoryName</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <!-- Standard HTML select for comparison -->
+                    <select @bind="@_newProduct.CategoryId">
+                        @foreach (var category in _categories)
+                        {
+                            <option value="@category.Id">@category.CategoryName</option>
+                        }
+                    </select>
+
+                    <MudSelect T="int" @bind-Value="_newProduct.UnitOfMeasureId" Label="Unit of Measure" Required="true" RequiredError="Unit of measure is required!">
+                        @foreach (var uom in _unitsOfMeasure)
+                        {
+                            <MudSelectItem Value="@uom.Id">@uom.UnitName (@uom.Symbol)</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudNumericField @bind-Value="_newProduct.Quantity" Label="Quantity" Required="true" RequiredError="Quantity is required!" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="AddNewProduct" Class="mt-4">Add Product</MudButton>
                 </MudForm>
             </MudPaper>
         </MudItem>
@@ -119,21 +124,6 @@
         align-items: center;
         justify-content: center;
         min-height: 180px;
-    }
-
-    .table-container {
-        flex-grow: 1;
-        overflow-y: auto;
-    }
-
-    .mud-table {
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .mud-table-container {
-        max-height: calc(100% - 30px);
     }
 
     .mud-input {
@@ -174,21 +164,15 @@
     .mud-input-root {
         font-size: 0.875rem;
     }
-
-    .mud-table-root {
-        font-size: 0.875rem;
-    }
-
-    .mud-table-head {
-        background-color: #f5f5f5;
-    }
-
-    .mud-table-cell {
-        padding: 8px 12px;
-    }
 </style>
 
 @code {
+    private List<Category> _categories = new List<Category>();
+    private List<UnitOfMeasure> _unitsOfMeasure = new List<UnitOfMeasure>();
+    private Product _newProduct = new Product { CategoryId = 0 }; // Initialize with a default value
+    private bool _formIsValid;
+    private MudForm _form;
+
     // Chart Data
     public List<ChartSeries> Series = new List<ChartSeries>()
     {
@@ -197,58 +181,76 @@
     public string[] XAxisLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
     public double[] PieChartData = { 60, 25, 15 };
-    public string[] PieChartLabels = { "Satisfied", "Neutral", "Unsatisfied" };
+    public string[] PieChartLabels = { "Category 1", "Category 2", "Category 3" };
 
-    public class Product
+    public List<ChartSeries> LineSeries = new List<ChartSeries>()
     {
-        public string Name { get; set; }
-        public int Sales { get; set; }
-    }
-
-    public List<Product> TopProducts = new List<Product>
-    {
-        new Product { Name = "Smartphone", Sales = 12500 },
-        new Product { Name = "Laptop", Sales = 10200 },
-        new Product { Name = "Headphones", Sales = 8700 },
-        new Product { Name = "Smartwatch", Sales = 7300 },
-        new Product { Name = "Tablet", Sales = 6200 },
-        new Product { Name = "Camera", Sales = 5100 },
+        new ChartSeries() { Name = "Product A", Data = new double[] { 10, 41, 35, 51, 49, 62, 69 } },
+        new ChartSeries() { Name = "Product B", Data = new double[] { 20, 38, 42, 45, 55, 60, 65 } },
     };
+    public string[] LineXAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul" };
 
-    // Form 1 Fields and Methods
-    private MudForm _form1;
-    private bool _form1IsValid;
-    private string _form1Field1;
-    private string _form1Field2;
-    private int _form1Field3;
-
-    private void OnForm1Submit()
+    protected override async Task OnInitializedAsync()
     {
-        // Handle Form 1 submission logic here
+        try
+        {
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnInitializedAsync: {ex.Message}");
+        }
     }
 
-    // Form 2 Fields and Methods
-    private MudForm _form2;
-    private bool _form2IsValid;
-    private string _form2Field1;
-    private string _form2Field2;
-    private int _form2Rating;
-
-    private void OnForm2Submit()
+    private async Task LoadData()
     {
-        // Handle Form 2 submission logic here
+        try
+        {
+            Console.WriteLine("Starting LoadData method");
+            var categoriesTask = CategoryService.GetAllCategoriesAsync();
+            var uomTask = UnitOfMeasureService.GetAllUnitOfMeasuresAsync();
+
+            await Task.WhenAll(categoriesTask, uomTask);
+
+            _categories = (await categoriesTask).ToList();
+            _unitsOfMeasure = (await uomTask).ToList();
+
+            Console.WriteLine($"Categories count: {_categories.Count}");
+            foreach (var category in _categories)
+            {
+                Console.WriteLine($"Category Id: {category.Id}, Name: {category.CategoryName}, Description: {category.Description}");
+            }
+
+            if (!_categories.Any())
+            {
+                Console.WriteLine("No categories found.");
+            }
+
+            Console.WriteLine("LoadData method completed");
+            StateHasChanged(); // Force UI update
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in LoadData: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
     }
 
-    // Form 3 Fields and Methods
-    private MudForm _form3;
-    private bool _form3IsValid;
-    private string _form3Field1;
-    private string _form3Field2;
-    private string _form3Field3;
-    private string _form3Field4;
-
-    private void OnForm3Submit()
+    private async Task AddNewProduct()
     {
-        // Handle Form 3 submission logic here
+        if (_formIsValid)
+        {
+            try
+            {
+                await ProductService.CreateProductAsync(_newProduct);
+                Snackbar.Add("Product added successfully", Severity.Success);
+                _newProduct = new Product();
+                _form.Reset();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error adding product: {ex.Message}", Severity.Error);
+            }
+        }
     }
 }

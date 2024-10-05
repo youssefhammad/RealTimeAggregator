@@ -7,9 +7,12 @@ using MudBlazor.Services;
 using RealTimeAggregator.Core;
 using RealTimeAggregator.Data;
 using RealTimeAggregator.Data.ProductsConfig;
+using RealTimeAggregator.Data.ProductsConfig.Repositories;
 using RealTimeAggregator.Data.Purchase;
 using RealTimeAggregator.Data.Sales;
 using RealTimeAggregator.Services;
+using RealTimeAggregator.Services.ProductsConfig.Implementations;
+using RealTimeAggregator.Services.ProductsConfig.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,11 +35,19 @@ builder.Services.AddScoped<PurchaseUnitOfWork>();
 // Configure Services
 builder.Services.AddScoped<ISalesService, SalesService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
-        
+
 builder.Services.Configure<ProductsConfigDbConfiguration>(builder.Configuration.GetSection("ProductsConfigDb"));
 builder.Services.AddSingleton<IProductsConfigDbService, ProductsConfigDbService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(CouchbaseRepository<>));
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IUnitOfMeasureRepository, UnitOfMeasureRepository>();
+
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IUnitOfMeasureService, UnitOfMeasureService>();
 
 var app = builder.Build();
 

@@ -15,7 +15,15 @@ namespace RealTimeAggregator.Services.ProductsConfig.Implementations
 
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
-            return await _categoryRepository.GetAllAsync();
+            try
+            {
+                var categories = await _categoryRepository.GetAllAsync();
+                return categories;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<Category> GetCategoryByIdAsync(int id)
