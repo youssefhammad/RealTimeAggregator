@@ -1,9 +1,11 @@
 ﻿using Couchbase.Query;
+using Newtonsoft.Json;
 using RealTimeAggregator.Core;
 using RealTimeAggregator.Data.ProductsConfig.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,30 +29,31 @@ namespace RealTimeAggregator.Data.ProductsConfig
             try
             {
                 var cluster = await _dbService.GetClusterAsync();
-                string query;
+                var properties = typeof(T).GetProperties()
+                    .Where(p => p.GetCustomAttribute<JsonPropertyAttribute>()?.PropertyName != "type")
+                    .Select(p =>
+                    {
+                        var jsonProperty = p.GetCustomAttribute<JsonPropertyAttribute>();
+                        return jsonProperty != null ? jsonProperty.PropertyName : p.Name;
+                    })
+                    .ToList();
 
-                if (typeof(T) == typeof(Category))
-                {
-                    query = $"SELECT id, categoryName, description FROM `{_bucketName}`.`_default`.`{_collectionName}` WHERE type = 'category'";
-                }
-                else
-                {
-                    query = $"SELECT * FROM `{_bucketName}`.`_default`.`{_collectionName}` WHERE type = '{typeof(T).Name.ToLower()}'";
-                }
-
+                string fieldsString = string.Join(", ", properties);
+                string query = $"SELECT {fieldsString} FROM `{_bucketName}`.`_default`.`{_collectionName}`";
 
                 var result = await cluster.QueryAsync<T>(query);
                 var resultList = await result.Rows.ToListAsync();
 
                 foreach (var item in resultList)
                 {
-                    Console.WriteLine($"Retrieved item: {Newtonsoft.Json.JsonConvert.SerializeObject(item)}");
+                    Console.WriteLine($"Retrieved item: {JsonConvert.SerializeObject(item)}");
                 }
 
                 return resultList;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error in GetAllAsync: {ex.Message}");
                 throw;
             }
         }

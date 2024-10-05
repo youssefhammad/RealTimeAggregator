@@ -1,14 +1,25 @@
-﻿using RealTimeAggregator.Core;
+﻿using Newtonsoft.Json;
+using RealTimeAggregator.Core;
 
 namespace RealTimeAggregator.Data.ProductsConfig.Models
 {
     public class Product : IEntity
     {
-        public int Id { get; set; }
-        public int CategoryId { get; set; }
+        public Product() 
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("categoryId")]
+        public string CategoryId { get; set; }
+        [JsonProperty("productName")]
         public string ProductName { get; set; }
+        [JsonProperty("description")]
         public string Description { get; set; }
-        public int UnitOfMeasureId { get; set; }  // Reference to UnitOfMeasure
+        [JsonProperty("unitOfMeasureId")]
+        public string UnitOfMeasureId { get; set; }  // Reference to UnitOfMeasure
+        [JsonProperty("quantity")]
         public decimal Quantity { get; set; }
         public List<ProductAttribute> Attributes { get; set; } = new List<ProductAttribute>();
     }

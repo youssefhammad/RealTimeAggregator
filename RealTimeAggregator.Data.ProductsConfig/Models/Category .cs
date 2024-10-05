@@ -11,7 +11,7 @@ namespace RealTimeAggregator.Data.ProductsConfig.Models
     public class Category : IEntity
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("categoryName")]
         public string CategoryName { get; set; }
