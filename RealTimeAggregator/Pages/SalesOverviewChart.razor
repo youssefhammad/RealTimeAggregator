@@ -1,0 +1,17 @@
+﻿@using MudBlazor
+
+<MudPaper Elevation="3" Class="dashboard-box flex-grow-1">
+    <MudText Typo="Typo.h6" Class="mb-2">Sales Overview</MudText>
+    <div class="chart-container">
+        <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="200px" />
+    </div>
+    <MudText Typo="Typo.body2" Class="mt-2">Total Sales: <MudText Typo="Typo.h6" Color="Color.Primary" Inline="true">$54,350</MudText></MudText>
+</MudPaper>
+
+@code {
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Sales", Data = new double[] { 90, 79, 72, 69, 66, 55, 40 } },
+    };
+    public string[] XAxisLabels = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+}

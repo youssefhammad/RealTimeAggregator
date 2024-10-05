@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RealTimeAggregator.Data.Sales
 {
-    public class SalesRepository<T> : IRepository<T> where T : class, IEntity
+    public class SalesRepository<T> : IRepository<T> where T : class
     {
         protected readonly SalesDbContext _context;
         protected readonly DbSet<T> _dbSet;
@@ -19,31 +19,32 @@ namespace RealTimeAggregator.Data.Sales
             _dbSet = context.Set<T>();
         }
 
-        public Task AddAsync(T entity)
+        public async Task<T> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FindAsync(id);
         }
 
-        public Task DeleteAsync(T entity)
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _dbSet.ToListAsync();
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public async Task AddAsync(T entity)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<T> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
+            await _dbSet.AddAsync(entity);
         }
 
         public Task UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            _context.Entry(entity).State = EntityState.Modified;
+            return Task.CompletedTask;
         }
 
-        // Implement IRepository methods
+        public Task DeleteAsync(T entity)
+        {
+            _dbSet.Remove(entity);
+            return Task.CompletedTask;
+        }
+
     }
 }

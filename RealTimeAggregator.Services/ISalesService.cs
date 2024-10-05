@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RealTimeAggregator.Data.Sales.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace RealTimeAggregator.Services
 {
     public interface ISalesService
     {
+        Task<int> CreateNewSaleAsync(int customerId, DateTime orderDate, decimal totalAmount, List<SalesOrderDetail> orderDetails);
+        Task<IEnumerable<Customer>> GetAllCustomersAsync();
     }
 }

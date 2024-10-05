@@ -1,0 +1,14 @@
+﻿@using MudBlazor
+
+<MudPaper Elevation="3" Class="dashboard-box flex-grow-1">
+    <MudText Typo="Typo.h6" Class="mb-2">Product Distribution</MudText>
+    <div class="chart-container">
+        <MudChart ChartType="ChartType.Pie" InputData="@PieChartData" InputLabels="@PieChartLabels" Width="100%" Height="200px" />
+    </div>
+    <MudText Typo="Typo.body2" Class="mt-2">Total Products: <MudText Typo="Typo.h6" Color="Color.Secondary" Inline="true">150</MudText></MudText>
+</MudPaper>
+
+@code {
+    public double[] PieChartData = { 60, 25, 15 };
+    public string[] PieChartLabels = { "Category 1", "Category 2", "Category 3" };
+}

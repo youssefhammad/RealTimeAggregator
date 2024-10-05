@@ -1,4 +1,5 @@
-﻿using RealTimeAggregator.Core;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using RealTimeAggregator.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,13 @@ namespace RealTimeAggregator.Data.Purchase
             _context = context;
         }
 
-        public async Task SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
+        }
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
 
         public void Dispose()

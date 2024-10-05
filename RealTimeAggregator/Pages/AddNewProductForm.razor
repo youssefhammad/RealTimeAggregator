@@ -1,0 +1,118 @@
+﻿@using RealTimeAggregator.Data.ProductsConfig.Models
+@using RealTimeAggregator.Services.ProductsConfig.Interfaces
+@inject IProductService ProductService
+@inject ICategoryService CategoryService
+@inject IUnitOfMeasureService UnitOfMeasureService
+@inject ISnackbar Snackbar
+
+<div class="form-box flex-grow-1">
+    <h6 class="mb-2">Add New Product</h6>
+    <EditForm Model="_newProduct" OnValidSubmit="AddNewProduct" class="d-flex flex-column">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-2">
+            <label for="productName">Product Name</label>
+            <InputText id="productName" @bind-Value="_newProduct.ProductName" class="mb-2" />
+            <ValidationMessage For="@(() => _newProduct.ProductName)" />
+        </div>
+
+        <div class="mb-2">
+            <label for="description">Description</label>
+            <InputText id="description" @bind-Value="_newProduct.Description" class="mb-2" />
+        </div>
+
+        <div class="mb-2">
+            <label for="categoryId">Category</label>
+            <select id="categoryId" @bind="_newProduct.CategoryId" class="mb-2">
+                @foreach (var category in _categories)
+                {
+                    <option value="@category.Id">@category.CategoryName</option>
+                }
+            </select>
+            <ValidationMessage For="@(() => _newProduct.CategoryId)" />
+        </div>
+
+        <div class="mb-2">
+            <label for="unitOfMeasureId">Unit of Measure</label>
+            <select id="unitOfMeasureId" @bind="_newProduct.UnitOfMeasureId" class="mb-2">
+                @foreach (var uom in _unitsOfMeasure)
+                {
+                    <option value="@uom.Id">@uom.UnitName (@uom.Symbol)</option>
+                }
+            </select>
+            <ValidationMessage For="@(() => _newProduct.UnitOfMeasureId)" />
+        </div>
+
+        <div class="mb-2">
+            <label for="quantity">Quantity</label>
+            <InputNumber id="quantity" @bind-Value="_newProduct.Quantity" class="mb-2" />
+            <ValidationMessage For="@(() => _newProduct.Quantity)" />
+        </div>
+
+        <button type="submit" class="mt-4 submit-button">Add Product</button>
+    </EditForm>
+</div>
+
+@code {
+    private List<Category> _categories = new List<Category>();
+    private List<UnitOfMeasure> _unitsOfMeasure = new List<UnitOfMeasure>();
+    private Product _newProduct = new Product { CategoryId = "" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnInitializedAsync: {ex.Message}");
+        }
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            Console.WriteLine("Starting LoadData method");
+            var categoriesTask = CategoryService.GetAllCategoriesAsync();
+            var uomTask = UnitOfMeasureService.GetAllUnitOfMeasuresAsync();
+
+            await Task.WhenAll(categoriesTask, uomTask);
+
+            _categories = (await categoriesTask).ToList();
+            _unitsOfMeasure = (await uomTask).ToList();
+
+            if (!_categories.Any())
+            {
+                Console.WriteLine("No categories found.");
+            }
+
+            Console.WriteLine("LoadData method completed");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in LoadData: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+        }
+    }
+
+    private async Task AddNewProduct()
+    {
+        if (_newProduct != null)
+        {
+            try
+            {
+                await ProductService.CreateProductAsync(_newProduct);
+                Snackbar.Add("Product added successfully", Severity.Success);
+                _newProduct = new Product();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error adding product: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+}

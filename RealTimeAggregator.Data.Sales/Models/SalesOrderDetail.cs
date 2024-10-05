@@ -8,7 +8,7 @@ namespace RealTimeAggregator.Data.Sales.Models
         [Key]
         public int SalesOrderDetailID { get; set; }
         public int SalesOrderID { get; set; }
-        public int ProductID { get; set; }
+        public string ProductID { get; set; }
         public int Quantity { get; set; }
 
         [ForeignKey("SalesOrderID")]

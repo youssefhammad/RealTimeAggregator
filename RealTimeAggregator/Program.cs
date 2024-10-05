@@ -30,6 +30,7 @@ builder.Services.AddDbContext<PurchaseDbContext>(options =>
 
 // Configure Unit of Work
 builder.Services.AddScoped<SalesUnitOfWork>();
+builder.Services.AddScoped<ISalesUnitOfWork, SalesUnitOfWork>();
 builder.Services.AddScoped<PurchaseUnitOfWork>();
 
 // Configure Services

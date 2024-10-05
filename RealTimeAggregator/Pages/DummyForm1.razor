@@ -1,0 +1,102 @@
+﻿@page "/create-sale"
+@using RealTimeAggregator.Data.ProductsConfig.Models
+@using RealTimeAggregator.Data.Sales.Models
+@using RealTimeAggregator.Services
+@using RealTimeAggregator.Services.ProductsConfig.Interfaces
+@inject ISalesService SalesService
+@inject IProductService ProductService
+@inject IUnitOfMeasureService UnitOfMeasureService
+
+<div class="form-box flex-grow-1">
+    <h6 class="mb-2">Create New Sale</h6>
+    <EditForm Model="@saleModel" OnValidSubmit="HandleValidSubmit" class="d-flex flex-column">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <label for="customerId">Customer</label>
+        <InputSelect id="customerId" @bind-Value="saleModel.CustomerID" class="mb-2">
+            @foreach (var customer in customers)
+            {
+                <option value="@customer.CustomerID">@customer.CustomerName</option>
+            }
+        </InputSelect>
+
+        <label for="orderDate">Order Date</label>
+        <InputDate id="orderDate" @bind-Value="saleModel.OrderDate" class="mb-2" />
+
+        <label for="totalAmount">Total Amount</label>
+        <InputNumber id="totalAmount" @bind-Value="saleModel.TotalAmount" class="mb-2" />
+
+        <h6 class="mt-3">Order Details</h6>
+        @foreach (var detail in saleModel.OrderDetails)
+        {
+            <div class="order-detail mb-2">
+                <label>Product</label>
+                <InputSelect @bind-Value="detail.ProductID" class="mb-1">
+                    @foreach (var product in products)
+                    {
+                        <option value="@product.Id">@product.ProductName</option>
+                    }
+                </InputSelect>
+
+                <label>Quantity</label>
+                <InputNumber @bind-Value="detail.Quantity" class="mb-1" />
+            </div>
+        }
+
+        <button type="button" class="btn btn-secondary mt-2" @onclick="AddOrderDetail">Add Another Product</button>
+
+        <button type="submit" class="mt-4 submit-button">Create Sale</button>
+    </EditForm>
+</div>
+
+@code {
+    private SaleModel saleModel = new SaleModel();
+    private List<Customer> customers = new List<Customer>();
+    private List<Product> products = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = (await SalesService.GetAllCustomersAsync()).ToList();
+        products = (await ProductService.GetAllProductsAsync()).ToList();
+
+        saleModel.OrderDate = DateTime.Now;
+        saleModel.OrderDetails.Add(new SalesOrderDetail());
+    }
+
+    private void AddOrderDetail()
+    {
+        saleModel.OrderDetails.Add(new SalesOrderDetail());
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        Console.WriteLine("HandleValidSubmit method called");
+
+        try
+        {
+            int newSaleId = await SalesService.CreateNewSaleAsync(
+                saleModel.CustomerID,
+                saleModel.OrderDate,
+                saleModel.TotalAmount,
+                saleModel.OrderDetails
+            );
+
+            // Handle successful creation (e.g., show a message, navigate to a different page)
+            Console.WriteLine($"New sale created with ID: {newSaleId}");
+        }
+        catch (Exception ex)
+        {
+            // Handle error (e.g., show error message)
+            Console.WriteLine($"Error creating sale: {ex.Message}");
+        }
+    }
+
+    private class SaleModel
+    {
+        public int CustomerID { get; set; }
+        public DateTime OrderDate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public List<SalesOrderDetail> OrderDetails { get; set; } = new List<SalesOrderDetail>();
+    }
+}
