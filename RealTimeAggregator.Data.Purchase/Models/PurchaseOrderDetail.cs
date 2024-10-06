@@ -9,9 +9,9 @@ namespace RealTimeAggregator.Data.Purchase.Models
         public int PurchaseOrderDetailID { get; set; }
         [ForeignKey("PurchaseOrder")]
         public int PurchaseOrderID { get; set; }
-        public int ProductID { get; set; }
+        public string ProductID { get; set; }
         public int Quantity { get; set; }
-
+        public decimal Price { get; set; }
         public virtual PurchaseOrder PurchaseOrder { get; set; }
     }
 }

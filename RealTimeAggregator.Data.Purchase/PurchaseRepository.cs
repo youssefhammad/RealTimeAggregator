@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RealTimeAggregator.Data.Purchase
 {
-    public class PurchaseRepository<T> : IRepository<T> where T : class, IEntity
+    public class PurchaseRepository<T> : IRepository<T> where T : class
     {
         protected readonly PurchaseDbContext _context;
         protected readonly DbSet<T> _dbSet;
