@@ -15,6 +15,7 @@
 
         <label for="customerId">Customer</label>
         <InputSelect id="customerId" @bind-Value="saleModel.CustomerID" class="mb-2">
+            <option value="">-- Select a Customer --</option>
             @foreach (var customer in customers)
             {
                 <option value="@customer.CustomerID">@customer.CustomerName</option>
@@ -24,15 +25,13 @@
         <label for="orderDate">Order Date</label>
         <InputDate id="orderDate" @bind-Value="saleModel.OrderDate" class="mb-2" />
 
-        <label for="totalAmount">Total Amount</label>
-        <InputNumber id="totalAmount" @bind-Value="saleModel.TotalAmount" class="mb-2" />
-
         <h6 class="mt-3">Order Details</h6>
         @foreach (var detail in saleModel.OrderDetails)
         {
             <div class="order-detail mb-2">
                 <label>Product</label>
-                <InputSelect @bind-Value="detail.ProductID" class="mb-1">
+                <InputSelect Value="@detail.ProductID" ValueChanged="@((string value) => ProductChanged(detail, value))" ValueExpression="@(() => detail.ProductID)" class="mb-1">
+                    <option value="">-- Select a Product --</option>
                     @foreach (var product in products)
                     {
                         <option value="@product.Id">@product.ProductName</option>
@@ -40,10 +39,12 @@
                 </InputSelect>
 
                 <label>Quantity</label>
-                <InputNumber @bind-Value="detail.Quantity" class="mb-1" />
+                <InputNumber @bind-Value="detail.Quantity" min="1" class="mb-1" />
+
+                <label>Price</label>
+                <InputNumber @bind-Value="detail.Price" class="mb-1" readonly />
             </div>
         }
-
         <button type="button" class="btn btn-secondary mt-2" @onclick="AddOrderDetail">Add Another Product</button>
 
         <button type="submit" class="mt-4 submit-button">Create Sale</button>
@@ -60,34 +61,85 @@
         customers = (await SalesService.GetAllCustomersAsync()).ToList();
         products = (await ProductService.GetAllProductsAsync()).ToList();
 
+        Console.WriteLine($"Loaded {customers.Count} customers and {products.Count} products");
+
         saleModel.OrderDate = DateTime.Now;
-        saleModel.OrderDetails.Add(new SalesOrderDetail());
+        saleModel.OrderDetails.Add(new SalesOrderDetail { Quantity = 1 });
+
+        Console.WriteLine("Initialized SaleModel with one OrderDetail");
     }
 
     private void AddOrderDetail()
     {
-        saleModel.OrderDetails.Add(new SalesOrderDetail());
+        saleModel.OrderDetails.Add(new SalesOrderDetail { Quantity = 1 });
+        Console.WriteLine($"Added new OrderDetail. Total OrderDetails: {saleModel.OrderDetails.Count}");
+    }
+
+    private void ProductChanged(SalesOrderDetail detail, string newProductId)
+    {
+        detail.ProductID = newProductId;
+        UpdateProductPrice(detail);
+    }
+
+    private void UpdateProductPrice(SalesOrderDetail detail)
+    {
+        Console.WriteLine($"Updating price for ProductID: {detail.ProductID}");
+
+        var selectedProduct = products.FirstOrDefault(p => p.Id == detail.ProductID);
+        if (selectedProduct != null)
+        {
+            detail.Price = selectedProduct.Price;
+            Console.WriteLine($"Updated price to: {detail.Price}");
+        }
+        else
+        {
+            detail.Price = 0;
+            Console.WriteLine($"Product not found for ID: {detail.ProductID}. Price set to 0.");
+        }
+        StateHasChanged(); // Ensure the UI updates
     }
 
     private async Task HandleValidSubmit()
     {
         Console.WriteLine("HandleValidSubmit method called");
 
+        if (string.IsNullOrEmpty(saleModel.CustomerID.ToString()) || saleModel.CustomerID == 0)
+        {
+            Console.WriteLine("Error: No customer selected");
+            return;
+        }
+
+        if (saleModel.OrderDetails.Any(d => string.IsNullOrEmpty(d.ProductID) || d.Quantity < 1))
+        {
+            Console.WriteLine("Error: Invalid order details");
+            return;
+        }
+
         try
         {
+            Console.WriteLine("Product list:");
+            foreach (var prod in products)
+            {
+                Console.WriteLine($"Product ID: {prod.Id}, Name: {prod.ProductName}, Price: {prod.Price}");
+            }
+
+            Console.WriteLine("OrderDetails:");
+            foreach (var detail in saleModel.OrderDetails)
+            {
+                Console.WriteLine($"ProductID: {detail.ProductID}, Quantity: {detail.Quantity}, Price: {detail.Price}");
+            }
+
             int newSaleId = await SalesService.CreateNewSaleAsync(
                 saleModel.CustomerID,
                 saleModel.OrderDate,
-                saleModel.TotalAmount,
                 saleModel.OrderDetails
             );
 
-            // Handle successful creation (e.g., show a message, navigate to a different page)
+            saleModel = new SaleModel();
             Console.WriteLine($"New sale created with ID: {newSaleId}");
         }
         catch (Exception ex)
         {
-            // Handle error (e.g., show error message)
             Console.WriteLine($"Error creating sale: {ex.Message}");
         }
     }
@@ -96,7 +148,6 @@
     {
         public int CustomerID { get; set; }
         public DateTime OrderDate { get; set; }
-        public decimal TotalAmount { get; set; }
         public List<SalesOrderDetail> OrderDetails { get; set; } = new List<SalesOrderDetail>();
     }
 }

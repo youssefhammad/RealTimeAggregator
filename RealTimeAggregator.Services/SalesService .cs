@@ -17,12 +17,15 @@ namespace RealTimeAggregator.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<int> CreateNewSaleAsync(int customerId, DateTime orderDate, decimal totalAmount, List<SalesOrderDetail> orderDetails)
+        public async Task<int> CreateNewSaleAsync(int customerId, DateTime orderDate, List<SalesOrderDetail> orderDetails)
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
             {
+                // Calculate total amount
+                decimal totalAmount = orderDetails.Sum(detail => detail.Price * detail.Quantity);
+
                 // Create new SalesOrder
                 var salesOrder = new SalesOrder
                 {
@@ -37,8 +40,14 @@ namespace RealTimeAggregator.Services
                 // Add SalesOrderDetails
                 foreach (var detail in orderDetails)
                 {
-                    detail.SalesOrderID = salesOrder.SalesOrderID;
-                    await _unitOfWork.SalesOrderDetails.AddAsync(detail);
+                    var salesOrderDetail = new SalesOrderDetail
+                    {
+                        SalesOrderID = salesOrder.SalesOrderID,
+                        ProductID = detail.ProductID,
+                        Quantity = detail.Quantity,
+                        Price = detail.Price
+                    };
+                    await _unitOfWork.SalesOrderDetails.AddAsync(salesOrderDetail);
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -53,7 +62,6 @@ namespace RealTimeAggregator.Services
                 throw;
             }
         }
-
         public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
         {
             return await _unitOfWork.Customers.GetAllAsync();

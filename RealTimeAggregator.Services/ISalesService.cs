@@ -9,7 +9,7 @@ namespace RealTimeAggregator.Services
 {
     public interface ISalesService
     {
-        Task<int> CreateNewSaleAsync(int customerId, DateTime orderDate, decimal totalAmount, List<SalesOrderDetail> orderDetails);
+        Task<int> CreateNewSaleAsync(int customerId, DateTime orderDate, List<SalesOrderDetail> orderDetails);
         Task<IEnumerable<Customer>> GetAllCustomersAsync();
     }
 }

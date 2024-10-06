@@ -10,6 +10,7 @@ namespace RealTimeAggregator.Data.Sales.Models
         public int SalesOrderID { get; set; }
         public string ProductID { get; set; }
         public int Quantity { get; set; }
+        public decimal Price { get; set; }
 
         [ForeignKey("SalesOrderID")]
         public SalesOrder SalesOrder { get; set; }

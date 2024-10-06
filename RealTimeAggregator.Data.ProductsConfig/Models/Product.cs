@@ -21,6 +21,8 @@ namespace RealTimeAggregator.Data.ProductsConfig.Models
         public string UnitOfMeasureId { get; set; }  // Reference to UnitOfMeasure
         [JsonProperty("quantity")]
         public decimal Quantity { get; set; }
+        [JsonProperty("price")]
+        public decimal Price { get; set; }
         public List<ProductAttribute> Attributes { get; set; } = new List<ProductAttribute>();
     }
 }
