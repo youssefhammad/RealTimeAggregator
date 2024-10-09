@@ -5,7 +5,7 @@ namespace RealTimeAggregator.Data.Purchase.Models
     public class Warehouse
     {
         [Key]
-        public int WarehouseID { get; set; }
+        public int Id { get; set; }
         [Required]
         [MaxLength(255)]
         public string WarehouseName { get; set; }

@@ -43,7 +43,7 @@ namespace RealTimeAggregator.Services
                 {
                     var purchaseOrderDetail = new PurchaseOrderDetail
                     {
-                        PurchaseOrderID = purchase.PurchaseOrderID,
+                        PurchaseOrderID = purchase.Id,
                         ProductID = detail.ProductID,
                         Quantity = detail.Quantity,
                         Price = detail.Price
@@ -55,7 +55,7 @@ namespace RealTimeAggregator.Services
 
                 await transaction.CommitAsync();
 
-                return purchase.PurchaseOrderID;
+                return purchase.Id;
             }
             catch
             {

@@ -42,7 +42,7 @@ namespace RealTimeAggregator.Services
                 {
                     var salesOrderDetail = new SalesOrderDetail
                     {
-                        SalesOrderID = salesOrder.SalesOrderID,
+                        SalesOrderID = salesOrder.Id,
                         ProductID = detail.ProductID,
                         Quantity = detail.Quantity,
                         Price = detail.Price
@@ -54,7 +54,7 @@ namespace RealTimeAggregator.Services
 
                 await transaction.CommitAsync();
 
-                return salesOrder.SalesOrderID;
+                return salesOrder.Id;
             }
             catch
             {

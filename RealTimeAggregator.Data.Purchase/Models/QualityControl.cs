@@ -6,7 +6,7 @@ namespace RealTimeAggregator.Data.Purchase.Models
     public class QualityControl
     {
         [Key]
-        public int QualityControlID { get; set; }
+        public int Id { get; set; }
         [ForeignKey("ReceivingLog")]
         public int ReceivingID { get; set; }
         [MaxLength(255)]

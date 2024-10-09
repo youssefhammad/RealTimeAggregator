@@ -6,7 +6,7 @@ namespace RealTimeAggregator.Data.Purchase.Models
     public class PurchaseOrder
     {
         [Key]
-        public int PurchaseOrderID { get; set; }
+        public int Id { get; set; }
         [ForeignKey("Supplier")]
         public int SupplierID { get; set; }
         public DateTime OrderDate { get; set; }

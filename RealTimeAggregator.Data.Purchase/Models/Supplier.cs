@@ -10,7 +10,7 @@ namespace RealTimeAggregator.Data.Purchase.Models
     public class Supplier
     {
         [Key]
-        public int SupplierID { get; set; }
+        public int Id { get; set; }
         [Required]
         [MaxLength(255)]
         public string SupplierName { get; set; }

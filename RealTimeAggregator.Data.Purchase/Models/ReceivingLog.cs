@@ -6,7 +6,7 @@ namespace RealTimeAggregator.Data.Purchase.Models
     public class ReceivingLog
     {
         [Key]
-        public int ReceivingID { get; set; }
+        public int Id { get; set; }
         [ForeignKey("PurchaseOrder")]
         public int PurchaseOrderID { get; set; }
         public DateTime ReceiveDate { get; set; }

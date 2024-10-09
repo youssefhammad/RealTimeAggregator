@@ -6,7 +6,7 @@ namespace RealTimeAggregator.Data.Sales.Models
     public class Payment
     {
         [Key]
-        public int PaymentID { get; set; }
+        public int Id { get; set; }
         public int SalesOrderID { get; set; }
         public decimal Amount { get; set; }
 

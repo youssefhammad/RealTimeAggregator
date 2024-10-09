@@ -6,7 +6,7 @@ namespace RealTimeAggregator.Data.Sales.Models
     public class SalesOrderDetail
     {
         [Key]
-        public int SalesOrderDetailID { get; set; }
+        public int Id { get; set; }
         public int SalesOrderID { get; set; }
         public string ProductID { get; set; }
         public int Quantity { get; set; }
