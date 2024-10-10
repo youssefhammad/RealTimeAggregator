@@ -10,6 +10,9 @@ using RealTimeAggregator.Data.ProductsConfig;
 using RealTimeAggregator.Data.ProductsConfig.Repositories;
 using RealTimeAggregator.Data.Purchase;
 using RealTimeAggregator.Data.Sales;
+using RealTimeAggregator.Kafka.MessageHandlers;
+using RealTimeAggregator.Kafka.MessageProcessor;
+using RealTimeAggregator.Kafka.Services;
 using RealTimeAggregator.Services;
 using RealTimeAggregator.Services.ProductsConfig.Implementations;
 using RealTimeAggregator.Services.ProductsConfig.Interfaces;
@@ -19,7 +22,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+builder.Services.AddSingleton<IKafkaConsumerService, KafkaConsumerService>();
+builder.Services.AddSingleton<IMessageHandler, SalesMessageHandler>();
+builder.Services.AddSingleton<IMessageHandler, PurchaseMessageHandler>();
+builder.Services.AddSingleton<IMessageHandler, ProfitMessageHandler>();
+builder.Services.AddSingleton<IMessageProcessor, MessageProcessor>();
+builder.Services.AddScoped<MessageProcessor>();
+builder.Services.AddHostedService(sp => (KafkaConsumerService)sp.GetRequiredService<IKafkaConsumerService>());
 
 builder.Services.AddMudServices();
 

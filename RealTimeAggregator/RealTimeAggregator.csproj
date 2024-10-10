@@ -18,6 +18,7 @@
     <ProjectReference Include="..\RealTimeAggregator.Data.ProductsConfig\RealTimeAggregator.Data.ProductsConfig.csproj" />
     <ProjectReference Include="..\RealTimeAggregator.Data.Purchase\RealTimeAggregator.Data.Purchase.csproj" />
     <ProjectReference Include="..\RealTimeAggregator.Data.Sales\RealTimeAggregator.Data.Sales.csproj" />
+    <ProjectReference Include="..\RealTimeAggregator.Kafka\RealTimeAggregator.Kafka.csproj" />
     <ProjectReference Include="..\RealTimeAggregator.Services\RealTimeAggregator.Services.csproj" />
   </ItemGroup>
 

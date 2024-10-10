@@ -1,49 +1,81 @@
 ﻿@page "/dashboard"
 @using MudBlazor
+@using RealTimeAggregator.Kafka.MessageProcessor
+@using RealTimeAggregator.Kafka.Models
+@inject MessageProcessor MessageProcessor
 
-<div class="pa-4">
-    <div class="grid-container" style="height: 100%;">
-        <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
-            <MudGrid Spacing="2" Style="height: 100%;">
-                <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
-                    <SalesOverviewChart />
-                </MudItem>
-                <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
-                    <ProductDistributionChart />
-                </MudItem>
-                <MudItem xs="12" sm="4" md="4" Class="d-flex" Style="height: 50%;">
-                    <TopPerformingProductsChart />
-                </MudItem>
-            </MudGrid>
-        </MudContainer>
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%;">
+               @*  <SalesOverviewChart /> *@
+                <h3>Sales Total</h3>
+                <p>@_salesTotal.ToString("C")</p>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%;">
+               @*  <ProductDistributionChart /> *@
+                <h3>Purchase Total</h3>
+                <p>@_purchaseTotal.ToString("C")</p>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%;">
+                @* <TopPerformingProductsChart /> *@
+                <h3>Profit</h3>
+                <p>@_profit.ToString("C")</p>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%;">
+                <AddNewSales />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%;">
+                <AddNewPurchase />
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%;">
+                <AddNewProductForm />
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
 
-        <div class="grid-item d-flex" style="height: 50%;">
-            <AddNewSales />
-        </div>
+@code {
+    private decimal _salesTotal;
+    private decimal _purchaseTotal;
+    private decimal _profit;
 
-        <div class="grid-item d-flex" style="height: 50%;">
-            <AddNewPurchase />
-        </div>
-
-        <div class="grid-item d-flex" style="height: 50%;">
-            <AddNewProductForm />
-        </div>
-    </div>
-</div>
-
-<style>
-    .pa-4 {
-        padding: 16px;
+    protected override void OnInitialized()
+    {
+        MessageProcessor.OnMessageProcessed += HandleMessageProcessed;
+        MessageProcessor.Initialize();
     }
 
-    .grid-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
+    private void HandleMessageProcessed(IKafkaMessage message)
+    {
+        switch (message)
+        {
+            case SalesMessage salesMessage:
+                _salesTotal = salesMessage.TotalSales;
+                break;
+            case PurchaseMessage purchaseMessage:
+                _purchaseTotal = purchaseMessage.TotalPurchases;
+                break;
+            case ProfitMessage profitMessage:
+                _profit = profitMessage.NetProfit;
+                break;
+        }
+        Console.WriteLine(message.ToString());
+        InvokeAsync(StateHasChanged);
     }
 
-    .grid-item {
-        flex: 1 1 calc(33.333% - 16px);
-        box-sizing: border-box;
+    public void Dispose()
+    {
+        MessageProcessor.OnMessageProcessed -= HandleMessageProcessed;
     }
-</style>
+}
